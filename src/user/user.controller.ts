@@ -3,11 +3,11 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Patch,
   Post,
   Put,
 } from '@nestjs/common';
+import { ParamId } from 'src/decorators/param-id.decorator';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user.dto';
 import { UpdatePutUserDTO } from './dto/update-put-user.dto';
@@ -28,25 +28,22 @@ export class UserController {
   }
 
   @Get(':id')
-  async readOne(@Param('id') id: string) {
+  async readOne(@ParamId() id: string) {
     return await this.userService.listOne(id);
   }
 
   @Put(':id')
-  async update(@Body() data: UpdatePutUserDTO, @Param('id') id: string) {
+  async update(@Body() data: UpdatePutUserDTO, @ParamId() id: string) {
     return await this.userService.update(id, data);
   }
 
   @Patch(':id')
-  async updatePartial(
-    @Body() data: UpdatePatchUserDTO,
-    @Param('id') id: string,
-  ) {
+  async updatePartial(@Body() data: UpdatePatchUserDTO, @ParamId() id: string) {
     return await this.userService.updatePartial(id, data);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string) {
+  async delete(@ParamId() id: string) {
     return await this.userService.delete(id);
   }
 }
