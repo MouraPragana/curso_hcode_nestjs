@@ -84,7 +84,7 @@ export class AuthService {
   }
 
   async reset(password: string, token: string) {
-    const id = 'f8cf3693-5233-4f7a-b731-993e686270e3';
+    const id = token;
 
     const user = await this.prisma.user.update({
       where: { id },
