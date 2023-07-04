@@ -3,17 +3,21 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user.dto';
 import { UpdatePutUserDTO } from './dto/update-put-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create({ email, name, password, birthAt, role }: CreateUserDTO) {
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+
     return await this.prisma.user.create({
       data: {
         email,
         name,
-        password,
+        password: hashPassword,
         birthAt: new Date(birthAt),
         role,
       },
@@ -56,11 +60,14 @@ export class UserService {
   ) {
     await this.existsUser(id);
 
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+
     return await this.prisma.user.update({
       data: {
         email,
         name,
-        password,
+        password: hashPassword,
         birthAt: birthAt ? new Date(birthAt) : null,
         role,
       },
@@ -84,9 +91,17 @@ export class UserService {
 
     email && (data.email = email);
     name && (data.name = name);
-    password && (data.password = password);
+
+    if (password) {
+      const salt = await bcrypt.genSalt();
+      const hashPassword = await bcrypt.hash(password, salt);
+      data.password = hashPassword;
+    }
+
     birthAt && (data.birthAt = new Date(birthAt));
     role && (data.role = role);
+
+    console.log(data);
 
     return await this.prisma.user.update({ data, where: { id } });
   }
