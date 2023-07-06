@@ -4,9 +4,11 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { UserModule } from 'src/user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { FileModule } from 'src/file/file.module';
 
 @Module({
   imports: [
+    FileModule,
     PrismaModule,
     forwardRef(() => UserModule),
     JwtModule.register({
