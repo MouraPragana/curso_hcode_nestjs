@@ -1,16 +1,16 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
-import { AuthRegisterDTO } from './dto/auth-register.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { MailerService } from '@nestjs-modules/mailer';
 import { UserEntity } from 'src/user/entity/user.entity';
+import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
+import { AuthRegisterDTO } from './dto/auth-register.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
 
   constructor(
     private readonly JWTService: JwtService,
-    @Inject(UserEntity)
+    @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly userService: UserService,
     private readonly mailerService: MailerService,
