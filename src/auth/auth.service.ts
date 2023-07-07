@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -8,6 +9,8 @@ import { UserService } from 'src/user/user.service';
 import { AuthRegisterDTO } from './dto/auth-register.dto';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
+import { UserEntity } from 'src/user/entity/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -16,11 +19,13 @@ export class AuthService {
 
   constructor(
     private readonly JWTService: JwtService,
+    @Inject(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly userService: UserService,
     private readonly mailerService: MailerService,
   ) {}
 
-  async createToken(user: User) {
+  async createToken(user: UserEntity) {
     return {
       accessToken: this.JWTService.sign(
         { id: user.id, name: user.name, email: user.email },
@@ -55,11 +60,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        email,
-      },
-    });
+    const user = await this.userRepository.findOneBy({ email });
 
     if (!user) {
       throw new UnauthorizedException('Email e/ou senha inválidos.');
@@ -75,11 +76,7 @@ export class AuthService {
   }
 
   async forget(email: string) {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        email,
-      },
-    });
+    const user = await this.userRepository.findOneBy({ email });
 
     if (!user) {
       throw new UnauthorizedException('Email está incorreto.');
@@ -122,14 +119,16 @@ export class AuthService {
       const salt = await bcrypt.genSalt();
       const hashPassword = await bcrypt.hash(password, salt);
 
-      const user = await this.prisma.user.update({
-        where: { id },
-        data: {
+      await this.userRepository.update(
+        { id },
+        {
           password: hashPassword,
         },
-      });
+      );
 
-      return await this.createToken(user);
+      const userToCreateToken = await this.userService.listOne(id);
+
+      return await this.createToken(userToCreateToken);
     } catch {
       throw new BadRequestException();
     }

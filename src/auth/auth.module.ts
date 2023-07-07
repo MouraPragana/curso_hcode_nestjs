@@ -9,12 +9,12 @@ import { UserEntity } from 'src/user/entity/user.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([UserEntity]),
     FileModule,
     forwardRef(() => UserModule),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
     }),
-    TypeOrmModule.forFeature([UserEntity]),
   ],
   controllers: [AuthController],
   providers: [AuthService],
