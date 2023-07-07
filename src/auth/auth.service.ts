@@ -9,6 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { AuthRegisterDTO } from './dto/auth-register.dto';
 import * as bcrypt from 'bcrypt';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     private readonly JWTService: JwtService,
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async createToken(user: User) {
@@ -86,20 +88,54 @@ export class AuthService {
       throw new UnauthorizedException('Email está incorreto.');
     }
 
+    const token = this.JWTService.sign(
+      {
+        id: user.id,
+      },
+      {
+        expiresIn: '30 minutes',
+        subject: user.id,
+        issuer: 'forget',
+        audience: 'users',
+      },
+    );
+
+    await this.mailerService.sendMail({
+      subject: 'Recuperação de senha',
+      to: 'mateuspragana@gmail.com',
+      template: 'forget',
+      context: {
+        name: user.name,
+        token,
+      },
+    });
+
     return true;
   }
 
   async reset(password: string, token: string) {
-    const id = token;
+    try {
+      const { id } = this.JWTService.verify(token, {
+        issuer: 'forget',
+        audience: 'users',
+      });
 
-    const user = await this.prisma.user.update({
-      where: { id },
-      data: {
-        password,
-      },
-    });
+      await this.userService.existsUser(id);
 
-    return await this.createToken(user);
+      const salt = await bcrypt.genSalt();
+      const hashPassword = await bcrypt.hash(password, salt);
+
+      const user = await this.prisma.user.update({
+        where: { id },
+        data: {
+          password: hashPassword,
+        },
+      });
+
+      return await this.createToken(user);
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   async register(data: AuthRegisterDTO) {
