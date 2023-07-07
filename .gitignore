@@ -2,6 +2,7 @@
 .env
 storage
 .vscode
+src/migrations
 
 # compiled output
 /dist
