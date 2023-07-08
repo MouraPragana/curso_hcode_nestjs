@@ -19,7 +19,7 @@ export class UserService {
   ) {}
 
   async create({ email, name, password, birthAt, role }: CreateUserDTO) {
-    const existsUser = await this.userRepository.findOneBy({ email });
+    const existsUser = await this.userRepository.exist({ where: { email } });
 
     if (existsUser) {
       throw new BadRequestException('Usuário já cadastrado');
@@ -36,7 +36,8 @@ export class UserService {
       role,
     });
 
-    return await this.userRepository.save(userToCreate);
+    const userSaved = await this.userRepository.save(userToCreate);
+    return this.showById(userSaved.id);
   }
 
   async listAll() {
@@ -44,7 +45,7 @@ export class UserService {
   }
 
   async listOne(id: string) {
-    await this.existsUser(id);
+    await this.exists(id);
     return await this.userRepository.findOneBy({ id });
   }
 
@@ -52,12 +53,12 @@ export class UserService {
     id: string,
     { email, name, password, birthAt, role }: UpdatePutUserDTO,
   ) {
-    await this.existsUser(id);
+    await this.exists(id);
 
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
 
-    return await this.userRepository.update(
+    await this.userRepository.update(
       { id },
       {
         email,
@@ -67,13 +68,15 @@ export class UserService {
         role,
       },
     );
+
+    return this.showById(id);
   }
 
   async updatePartial(
     id: string,
     { email, name, password, birthAt, role }: UpdatePatchUserDTO,
   ) {
-    await this.existsUser(id);
+    await this.exists(id);
 
     const data = {} as {
       email?: string;
@@ -95,7 +98,7 @@ export class UserService {
     birthAt && (data.birthAt = birthAt);
     role && (data.role = role);
 
-    return await this.userRepository.update(
+    await this.userRepository.update(
       { id },
       {
         email: data.email ?? undefined,
@@ -105,18 +108,26 @@ export class UserService {
         role: data.role ?? undefined,
       },
     );
+
+    return await this.showById(id);
   }
 
   async delete(id: string) {
-    await this.existsUser(id);
-    return await this.userRepository.softDelete({ id });
+    await this.exists(id);
+    await this.userRepository.softDelete({ id });
+    return true;
   }
 
-  async existsUser(id: string) {
-    const findUserById = await this.userRepository.findOneBy({ id });
+  async exists(id: string) {
+    const findUserById = await this.userRepository.exist({ where: { id } });
 
     if (!findUserById) {
       throw new NotFoundException('Usuário não existe !');
     }
+  }
+
+  async showById(id: string) {
+    this.exists(id);
+    return await this.userRepository.findOneBy({ id });
   }
 }

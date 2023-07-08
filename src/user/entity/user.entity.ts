@@ -23,13 +23,13 @@ export class UserEntity {
   password: string;
 
   @Column({ nullable: true })
-  birthAt: Date;
+  birthAt?: Date;
 
   @Column({
     enum: Role,
     default: 'user',
   })
-  role: string;
+  role?: string;
 
   @CreateDateColumn()
   createdAt: Date;

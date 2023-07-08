@@ -114,7 +114,7 @@ export class AuthService {
         audience: 'users',
       });
 
-      await this.userService.existsUser(id);
+      await this.userService.exists(id);
 
       const salt = await bcrypt.genSalt();
       const hashPassword = await bcrypt.hash(password, salt);
@@ -136,7 +136,6 @@ export class AuthService {
 
   async register(data: AuthRegisterDTO) {
     const user = await this.userService.create(data);
-
     return await this.createToken(user);
   }
 }
