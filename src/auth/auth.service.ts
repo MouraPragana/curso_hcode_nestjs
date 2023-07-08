@@ -1,4 +1,3 @@
-import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
   Injectable,
@@ -6,10 +5,11 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
-import { UserEntity } from 'src/user/entity/user.entity';
-import { UserService } from 'src/user/user.service';
+import { UserEntity } from '../user/entity/user.entity';
 import { Repository } from 'typeorm';
+import { UserService } from '../user/user.service';
+import { MailerService } from '@nestjs-modules/mailer';
+import * as bcrypt from 'bcrypt';
 import { AuthRegisterDTO } from './dto/auth-register.dto';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class AuthService {
     private readonly mailerService: MailerService,
   ) {}
 
-  async createToken(user: UserEntity) {
+  createToken(user: UserEntity) {
     return {
       accessToken: this.JWTService.sign(
         { id: user.id, name: user.name, email: user.email },
@@ -128,7 +128,7 @@ export class AuthService {
 
       const userToCreateToken = await this.userService.listOne(id);
 
-      return await this.createToken(userToCreateToken);
+      return this.createToken(userToCreateToken);
     } catch {
       throw new BadRequestException();
     }
@@ -136,6 +136,6 @@ export class AuthService {
 
   async register(data: AuthRegisterDTO) {
     const user = await this.userService.create(data);
-    return await this.createToken(user);
+    return this.createToken(user);
   }
 }

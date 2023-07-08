@@ -9,15 +9,16 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId } from 'src/decorators/param-id.decorator';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/enums/role.enum';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { RoleGuard } from 'src/guards/role.guard';
+
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user.dto';
 import { UpdatePutUserDTO } from './dto/update-put-user.dto';
 import { UserService } from './user.service';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../enums/role.enum';
+import { AuthGuard } from '../guards/auth.guard';
+import { RoleGuard } from '../guards/role.guard';
+import { ParamId } from '../decorators/param-id.decorator';
 
 @Roles(Role.Admin)
 @UseGuards(AuthGuard, RoleGuard)

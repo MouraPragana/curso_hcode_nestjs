@@ -15,8 +15,8 @@ import { UserModule } from './user/user.module';
         host: 'smtp.ethereal.email',
         port: 587,
         auth: {
-          user: 'lexi.harber@ethereal.email',
-          pass: 'Z4g7qJHZp3WRHVKuRa',
+          user: 'rod30@ethereal.email',
+          pass: 'sdfk5Hb3Y2M92WKMCv',
         },
       },
       defaults: {

@@ -1,6 +1,4 @@
-import { CreateUserDTO } from '../user/dto/create-user.dto';
-
-export const createUserDto: CreateUserDTO = {
+export const AuthRegisterMockDTO = {
   email: 'mateus@gmail.com',
   birthAt: '1990-01-01',
   name: 'Mateus',
