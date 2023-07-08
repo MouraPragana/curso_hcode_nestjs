@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  ParseUUIDPipe,
   Patch,
   Post,
   Put,
@@ -43,22 +44,28 @@ export class UserController {
   }
 
   @Get(':id')
-  async readOne(@ParamId() id: string) {
+  async readOne(@ParamId(new ParseUUIDPipe()) id: string) {
     return await this.userService.listOne(id);
   }
 
   @Put(':id')
-  async update(@Body() data: UpdatePutUserDTO, @ParamId() id: string) {
+  async update(
+    @Body() data: UpdatePutUserDTO,
+    @ParamId(new ParseUUIDPipe()) id: string,
+  ) {
     return await this.userService.update(id, data);
   }
 
   @Patch(':id')
-  async updatePartial(@Body() data: UpdatePatchUserDTO, @ParamId() id: string) {
+  async updatePartial(
+    @Body() data: UpdatePatchUserDTO,
+    @ParamId(new ParseUUIDPipe()) id: string,
+  ) {
     return await this.userService.updatePartial(id, data);
   }
 
   @Delete(':id')
-  async delete(@ParamId() id: string) {
+  async delete(@ParamId(new ParseUUIDPipe()) id: string) {
     return await this.userService.delete(id);
   }
 }

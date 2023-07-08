@@ -45,8 +45,8 @@ export class AuthService {
         issuer: this.issuer,
         audience: this.audience,
       });
-    } catch (e) {
-      throw new BadRequestException(e);
+    } catch {
+      throw new BadRequestException();
     }
   }
 
@@ -79,7 +79,7 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({ email });
 
     if (!user) {
-      throw new UnauthorizedException('Email está incorreto.');
+      throw new BadRequestException('Email incorreto.');
     }
 
     const token = this.JWTService.sign(

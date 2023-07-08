@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   FileTypeValidator,
+  Get,
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
@@ -54,7 +55,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('me')
+  @Get('me')
   async me(@User('id') id) {
     return { id };
   }
@@ -68,7 +69,7 @@ export class AuthController {
       new ParseFilePipe({
         validators: [
           new FileTypeValidator({ fileType: 'image/png' }),
-          new MaxFileSizeValidator({ maxSize: 10 }),
+          new MaxFileSizeValidator({ maxSize: 49000 }),
         ],
       }),
     )

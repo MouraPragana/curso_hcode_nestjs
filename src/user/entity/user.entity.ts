@@ -22,14 +22,14 @@ export class UserEntity {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   birthAt: Date;
 
   @Column({
     enum: Role,
-    default: 1,
+    default: 'user',
   })
-  role: number;
+  role: string;
 
   @CreateDateColumn()
   createdAt: Date;
