@@ -21,9 +21,11 @@
     "pretest:e2e": "cross-env ENV=test rimraf ./src/migrations && cross-env ENV=test npm run clear:db:test && cross-env ENV=test npm run migration:generate && cross-env ENV=test npm run migration:run",
     "test:e2e": "cross-env ENV=test jest --config ./test/jest-e2e.json",
     "posttest:e2e": "npm run clear:db:test",
-    "migration:generate": "npx typeorm-ts-node-esm migration:generate ./src/migrations/migrations -d ./src/data/data-source.ts",
+    "migration:generate": "rimraf ./src/migrations && npx typeorm-ts-node-esm migration:generate ./src/migrations/migrations -d ./src/data/data-source.ts",
     "migration:run": "npx typeorm-ts-node-esm migration:run -d ./src/data/data-source.ts",
-    "migration:revert": "npx typeorm-ts-node-esm migration:revert -d ./src/data/data-source.ts"
+    "migration:revert": "npx typeorm-ts-node-esm migration:revert -d ./src/data/data-source.ts",
+    "preprod": "npm run format && npm run lint && npm test && npm run test:e2e",
+    "prod": "npm run build"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",
