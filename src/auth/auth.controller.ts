@@ -26,6 +26,7 @@ import { AuthForgetDTO } from './dto/auth-forget.dto';
 import { AuthLoginDTO } from './dto/auth-login.dto';
 import { AuthRegisterDTO } from './dto/auth-register.dto';
 import { AuthResetDTO } from './dto/auth-reset.dto';
+import { UserEntity } from '../user/entity/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -56,15 +57,15 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Get('me')
-  async me(@User('id') id) {
-    return { id };
+  async me(@User() user: UserEntity) {
+    return user;
   }
 
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(AuthGuard)
   @Post('photo')
   async uploadPhoto(
-    @User() user,
+    @User() user: UserEntity,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -79,11 +80,10 @@ export class AuthController {
 
     try {
       await this.fileService.upload(photo, filename);
+      return { sucess: true };
     } catch (e) {
       throw new BadRequestException(e);
     }
-
-    return { sucess: true };
   }
 
   @UseInterceptors(FilesInterceptor('files'))
