@@ -30,10 +30,4 @@ export class AuthRegisterDTO {
   })
   @IsNotEmpty()
   password: string;
-
-  @IsOptional()
-  @IsEnum({
-    user: 'user',
-  })
-  role: string;
 }

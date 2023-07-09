@@ -15,8 +15,8 @@ import { UserModule } from './user/user.module';
         host: 'smtp.ethereal.email',
         port: 587,
         auth: {
-          user: 'rod30@ethereal.email',
-          pass: 'sdfk5Hb3Y2M92WKMCv',
+          user: 'giovanni.mueller@ethereal.email',
+          pass: 'hZAaTVsfSU5e5mDJ44',
         },
       },
       defaults: {
@@ -30,7 +30,9 @@ import { UserModule } from './user/user.module';
         },
       },
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: process.env.ENV === 'test' ? '.env.test' : '.env',
+    }),
     UserModule,
     AuthModule,
     ThrottlerModule.forRoot({
@@ -45,7 +47,7 @@ import { UserModule } from './user/user.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       autoLoadEntities: true,
-      synchronize: process.env.ENV === 'development',
+      synchronize: process.env.ENV === 'test',
     }),
   ],
   controllers: [],
