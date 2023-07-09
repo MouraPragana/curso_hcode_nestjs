@@ -96,7 +96,7 @@ export class AuthService {
 
     await this.mailerService.sendMail({
       subject: 'Recuperação de senha',
-      to: 'mateuspragana@gmail.com',
+      to: email,
       template: 'forget',
       context: {
         name: user.name,

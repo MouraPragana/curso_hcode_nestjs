@@ -55,7 +55,7 @@ describe('AuthService', () => {
     });
 
     test('method forget', async () => {
-      const result = await authService.forget('mateuspragana@gmail.com');
+      const result = await authService.forget('mateus@gmail.com');
       expect(result).toEqual(true);
     });
 
